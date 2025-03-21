@@ -1,4 +1,4 @@
-"use client";
+"use client"; // Enables client-side rendering in Next.js
 
 import { useEffect, useState } from "react";
 
@@ -6,34 +6,38 @@ export default function CategorySelector() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isClient, setIsClient] = useState(false);
 
-  // Ensuring the component only renders on the client to avoid SSR hydration issues
+  // Ensures the component only renders on the client to prevent SSR hydration issues
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // List of categories (currently contains only one category)
   const categories = [
     {
       id: 1,
       name: "All Categories",
-      count: null,
+      count: null, // No count displayed for this category
       isParent: true,
       isOpen: true,
     },
   ];
 
+  // Handles selection of a category
   const handleRadioChange = (id) => {
     setSelectedCategory(id);
   };
 
-  // Avoid rendering mismatched content during SSR
+  // Prevents rendering mismatched content during SSR
   if (!isClient)
     return <div className="p-4 bg-white">Loading categories...</div>;
 
   return (
     <div className="w-4.5 p-4 border rounded-md bg-white text-black">
+      {/* Filter Section Title */}
       <h2 className="font-bold mb-4">Filters :</h2>
       <h3 className=" mb-4">Select a Category:</h3>
 
+      {/* Category Selection List */}
       {categories.map((category) => (
         <label
           key={category.id}
@@ -51,8 +55,11 @@ export default function CategorySelector() {
         </label>
       ))}
 
-      {/* <h3 className="font-bold mt-4">Selected Category:</h3>
-      <p>{selectedCategory ? categories.find(cat => cat.id === selectedCategory)?.name : "None"}</p> */}
+      {/* Uncomment this section to display the selected category */}
+      {/* 
+      <h3 className="font-bold mt-4">Selected Category:</h3>
+      <p>{selectedCategory ? categories.find(cat => cat.id === selectedCategory)?.name : "None"}</p> 
+      */}
     </div>
   );
 }

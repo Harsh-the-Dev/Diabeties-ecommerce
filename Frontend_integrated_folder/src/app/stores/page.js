@@ -1,4 +1,5 @@
-"use client";
+"use client"; // Enables client-side rendering in Next.js
+
 import { useState, useEffect } from "react";
 import PriceFilter from "@/Components/Shop_components/PriceFilter";
 import RatingFilter from "@/Components/Shop_components/RatingFilter";
@@ -49,9 +50,9 @@ export default function ShopPage() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [products, setProducts] = useState(sampleProducts);
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 21; // Based on pagination shown in the image
+  const totalPages = 21; // Total number of pages
 
-  // Check if we're on mobile for initial sidebar visibility
+  // Check if the user is on a mobile device and hide the sidebar
   useEffect(() => {
     const checkIfMobile = () => {
       if (window.innerWidth < 768) {
@@ -61,42 +62,25 @@ export default function ShopPage() {
       }
     };
 
-    // Initial check
+    // Initial check for screen size
     checkIfMobile();
 
-    // Add resize listener
+    // Add event listener for window resize
     window.addEventListener("resize", checkIfMobile);
 
-    // Cleanup
+    // Cleanup event listener
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
-
-  // For a real application, you would fetch products from an API like this:
-  // useEffect(() => {
-  //   const fetchProducts = async () => {
-  //     try {
-  //       const response = await fetch('/api/products');
-  //       const data = await response.json();
-  //       setProducts(data);
-  //     } catch (error) {
-  //       console.error('Error fetching products:', error);
-  //       setProducts([]);
-  //     }
-  //   };
-  //
-  //   fetchProducts();
-  // }, []);
 
   // Pagination handler
   const handlePageChange = (page) => {
     setCurrentPage(page);
     // In a real app, you would fetch the products for the current page
-    // fetchProducts(page);
   };
 
   return (
-    <div className="container w-[90%]  mx-auto px-4 py-8 pt-[120px]">
-      {/* Breadcrumb */}
+    <div className="container w-[90%] mx-auto px-4 py-8 pt-[120px]">
+      {/* Breadcrumb navigation */}
       <div className="flex items-center mb-6 text-sm">
         <a href="/" className="text-gray-600">
           Home
@@ -109,13 +93,13 @@ export default function ShopPage() {
         <span className="text-green-500">store 1</span>
       </div>
 
-      {/* Mobile filter button - only shown on mobile */}
+      {/* Mobile filter button */}
       <div className="md:hidden mb-4">
         <MobileFilterButton />
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* Sidebar - hidden on mobile, shown on desktop */}
+        {/* Sidebar with filters */}
         <div
           className={`w-full md:w-1/4 space-y-4 ${
             showSidebar ? "" : "hidden md:block"
@@ -137,10 +121,13 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* Main content */}
+        {/* Main content section */}
         <div className="w-full md:w-3/4 text-black">
           <div className="flex justify-between items-center mb-6">
+            {/* Results count */}
             <div className="text-[12px] md:text-[1rem]">20 Results Found</div>
+
+            {/* Sorting dropdown */}
             <div className="flex items-center text-[12px] md:text-[1rem]">
               <span className="mr-2">Sort by:</span>
               <select className="w-[9rem] md:w-[12rem] border rounded-md p-2 cursor-pointer">
@@ -152,6 +139,7 @@ export default function ShopPage() {
             </div>
           </div>
 
+          {/* Product listing */}
           <ProductCard />
 
           {/* Pagination */}
@@ -167,7 +155,7 @@ export default function ShopPage() {
               &lt;
             </button>
 
-            {/* Page Numbers Logic */}
+            {/* Page Numbers */}
             {Array.from({ length: Math.min(5, totalPages) }).map((_, index) => {
               let pageNumber;
 

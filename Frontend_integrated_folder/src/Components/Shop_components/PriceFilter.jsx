@@ -3,18 +3,21 @@
 import { useState, useEffect } from "react";
 
 export default function PriceFilter() {
-  const [isOpen, setIsOpen] = useState(true);
-  const [priceRange, setPriceRange] = useState([0, 1500]);
-  const [isClient, setIsClient] = useState(false);
+  const [isOpen, setIsOpen] = useState(true); // State to toggle filter visibility
+  const [priceRange, setPriceRange] = useState([0, 1500]); // Default price range
+  const [isClient, setIsClient] = useState(false); // Ensure client-side rendering
 
+  // Prevents SSR hydration issues
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  // Toggle filter visibility
   const toggleFilter = () => {
     setIsOpen(!isOpen);
   };
 
+  // Handles price range change
   const handleMaxChange = (e) => {
     const newMax = parseInt(e.target.value);
     if (newMax >= 0) {
@@ -22,10 +25,12 @@ export default function PriceFilter() {
     }
   };
 
+  // Prevents server-side mismatches
   if (!isClient) return <div className="p-4 bg-white">Loading...</div>;
 
   return (
     <div className="border rounded-md p-4 pb-0 bg-white text-black">
+      {/* Filter Header with Toggle */}
       <div
         className="flex justify-between items-center mb-4 cursor-pointer"
         onClick={toggleFilter}
@@ -36,6 +41,7 @@ export default function PriceFilter() {
         </button>
       </div>
 
+      {/* Price Range Filter */}
       {isOpen && (
         <div>
           {/* Scroll Bar */}
@@ -51,7 +57,7 @@ export default function PriceFilter() {
               }}
             ></div>
 
-            {/* Input Slider - Properly Positioned */}
+            {/* Input Slider */}
             <input
               type="range"
               min="0"
@@ -82,7 +88,7 @@ export default function PriceFilter() {
             `}</style>
           </div>
 
-          {/* Price Display */}
+          {/* Display Selected Price */}
           <div className="flex justify-between items-center">
             <div className="text-sm text-gray-500 pb-4">
               Price: ₹0 — ₹{priceRange[1]}

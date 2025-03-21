@@ -1,11 +1,13 @@
-// import Head from "next/head";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Header from "../Components/Header";
-import Footer from "@/Components/Footer.components";
-import Newsletter from "@/Components/Newsletter.components";
-import { SessionProvider } from "next-auth/react";
+// import Head from "next/head"; // (Commented out) Can be used for custom metadata handling
 
+import { Geist, Geist_Mono } from "next/font/google"; // Importing Google Fonts
+import "./globals.css"; // Global CSS for styling
+import Header from "../Components/home_components/Header"; // Header component
+import Footer from "@/Components/home_components/Footer.components"; // Footer component
+import Newsletter from "@/Components/home_components/Newsletter.components"; // Newsletter subscription component
+import { SessionProvider } from "next-auth/react"; // NextAuth session provider for authentication (currently not in use)
+
+// Applying custom fonts with variable names
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -16,12 +18,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Metadata configuration for SEO
 export const metadata = {
-  title: "Diabatese | Free Website",
+  title: "Diabetes | Free Website", // Page title for SEO
   description:
-    "A free website dedicated to providing valuable information, resources, and products for managing diabetes. Stay informed, eat healthily, and live better with expert tips and organic product recommendations.",
+    "A free website dedicated to providing valuable information, resources, and products for managing diabetes. Stay informed, eat healthily, and live better with expert tips and organic product recommendations.", // Meta description for better search visibility
   icons: {
-    icon: "/favicon.ico",
+    icon: "/favicon.ico", // Website favicon
   },
 };
 
@@ -29,11 +32,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {/* <SessionProvider> */}
-        <Header />
-        {children}
-        <Newsletter />
-        <Footer />
+        {/* <SessionProvider> (Uncomment if authentication is required) */}
+        <Header /> {/* Website header with navigation */}
+        {children} {/* Dynamic page content */}
+        <Newsletter /> {/* Newsletter subscription section */}
+        <Footer /> {/* Footer section */}
         {/* </SessionProvider> */}
       </body>
     </html>

@@ -1,12 +1,15 @@
+// ✅ Import database connection
 const db = require("../config/db");
 
 // ✅ Add item to cart
-// ✅ Add item to cart
 exports.addToCart = async (req, res) => {
   try {
+    // Extract product ID and quantity from request body
     const { product_id, quantity } = req.body;
-    const user_id = req.userId; // ✅ Ensure req.userId is set by auth middleware
+    // ✅ Ensure req.userId is set by auth middleware (should be added in authentication logic)
+    const user_id = req.userId;
 
+    // ✅ Log request details for debugging
     console.log(
       "Received in addToCart - user_id:",
       user_id,
@@ -16,32 +19,37 @@ exports.addToCart = async (req, res) => {
       quantity
     );
 
+    // ✅ Check if user ID exists (ensures authentication)
     if (!user_id) {
       return res.status(401).json({ error: "Unauthorized: No user ID found" });
     }
+
+    // ✅ Validate required fields
     if (!product_id || !quantity) {
       return res
         .status(400)
         .json({ error: "Product ID and quantity are required" });
     }
 
-    // ✅ Insert or update the cart item
+    // ✅ Insert item into cart or update quantity if item already exists
     const [result] = await db.execute(
       "INSERT INTO Cart (user_id, product_id, quantity) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?",
       [user_id, product_id, quantity, quantity]
     );
 
-    // ✅ Retrieve updated cart items for debugging
+    // ✅ Retrieve updated cart items for the user
     const [cartItems] = await db.execute(
       "SELECT cart.id, cart.quantity, products.name, products.price FROM cart JOIN products ON cart.product_id = products.id WHERE cart.user_id = ?",
       [user_id]
     );
 
+    // ✅ Send success response with updated cart data
     res.status(200).json({
       message: "Item added to cart",
-      cart: cartItems, // Send back updated cart
+      cart: cartItems, // Send updated cart
     });
   } catch (error) {
+    // ✅ Log error for debugging
     console.error("Error in addToCart:", error.stack || error);
     res
       .status(500)
@@ -51,9 +59,10 @@ exports.addToCart = async (req, res) => {
 
 // ✅ View cart items
 exports.viewCart = async (req, res) => {
-  const user_id = req.userId;
+  const user_id = req.userId; // ✅ Extract user ID from request
 
   try {
+    // ✅ Fetch all cart items for the logged-in user, including product details
     const [cartItems] = await db.execute(
       `SELECT Cart.id, Products.name, Products.price, Cart.quantity,
             (Products.price * Cart.quantity) AS total_price
@@ -62,6 +71,8 @@ exports.viewCart = async (req, res) => {
             WHERE Cart.user_id = ?`,
       [user_id]
     );
+
+    // ✅ Send cart items in response
     res.json(cartItems);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -70,15 +81,21 @@ exports.viewCart = async (req, res) => {
 
 // ✅ Update cart item quantity
 exports.updateCartItem = async (req, res) => {
+  // ✅ Extract cart item ID from request parameters
   const { item_id } = req.params;
+  // ✅ Extract new quantity from request body
   const { quantity } = req.body;
+  // ✅ Extract user ID from request (ensures user modifies only their cart)
   const user_id = req.userId;
 
   try {
+    // ✅ Update cart item quantity for the specific user
     await db.execute(
       "UPDATE Cart SET quantity = ? WHERE id = ? AND user_id = ?",
       [quantity, item_id, user_id]
     );
+
+    // ✅ Send success response
     res.json({ message: "Cart updated" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -87,14 +104,19 @@ exports.updateCartItem = async (req, res) => {
 
 // ✅ Remove item from cart
 exports.removeCartItem = async (req, res) => {
+  // ✅ Extract cart item ID from request parameters
   const { item_id } = req.params;
+  // ✅ Extract user ID from request (ensures user removes only their cart items)
   const user_id = req.userId;
 
   try {
+    // ✅ Delete cart item for the specific user
     await db.execute("DELETE FROM Cart WHERE id = ? AND user_id = ?", [
       item_id,
       user_id,
     ]);
+
+    // ✅ Send success response
     res.json({ message: "Item removed from cart" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -103,15 +125,21 @@ exports.removeCartItem = async (req, res) => {
 
 // ✅ Checkout (Clear cart)
 exports.checkout = async (req, res) => {
+  // ✅ Extract user ID from request
   const user_id = req.userId;
 
   try {
+    // ✅ Clear the user's cart after successful checkout
     await db.execute("DELETE FROM Cart WHERE user_id = ?", [user_id]);
+
+    // ✅ Send success response
     res.json({ message: "Checkout successful. Cart cleared." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+// ✅ Unused alternative cart operations (Commented out legacy code)
 
 // const Cart = require("../models/Cart");
 

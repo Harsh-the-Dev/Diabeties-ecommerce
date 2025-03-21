@@ -2,74 +2,133 @@ const db = require("../config/db");
 
 // 🔹 Fetch all products
 exports.getAllProducts = async (req, res) => {
-    try {
-        const [products] = await db.execute("SELECT * FROM Products");
-        res.json(products);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  try {
+    // ✅ Retrieve all products from the database
+    const [products] = await db.execute("SELECT * FROM Products");
+    res.json(products);
+  } catch (error) {
+    // ❌ Handle errors
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // 🔹 Fetch a single product by ID
 exports.getProductById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [product] = await db.execute("SELECT * FROM Products WHERE id = ?", [id]);
-        if (product.length === 0) {
-            return res.status(404).json({ error: "Product not found" });
-        }
-        res.json(product[0]);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+  const { id } = req.params;
+  try {
+    // ✅ Retrieve product by ID
+    const [product] = await db.execute("SELECT * FROM Products WHERE id = ?", [
+      id,
+    ]);
+
+    // ✅ Check if product exists
+    if (product.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
     }
+
+    res.json(product[0]); // ✅ Return the first product found
+  } catch (error) {
+    // ❌ Handle errors
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // 🔹 Add a new product (Admin Only)
 exports.addProduct = async (req, res) => {
-    const { name, description, price, stock_quantity, category, discount, image_url } = req.body;
-    try {
-        await db.execute(
-            "INSERT INTO Products (name, description, price, stock_quantity, category, discount, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [name, description, price, stock_quantity, category, discount, image_url]
-        );
-        res.status(201).json({ message: "Product added successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  const {
+    name,
+    description,
+    price,
+    stock_quantity,
+    category,
+    discount,
+    image_url,
+  } = req.body;
+
+  console.log(
+    "product",
+    name,
+    description,
+    price,
+    stock_quantity,
+    category,
+    discount,
+    image_url
+  );
+
+  try {
+    // ✅ Insert a new product into the database
+    await db.execute(
+      "INSERT INTO Products (name, description, price, stock_quantity, category, discount, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [name, description, price, stock_quantity, category, discount, image_url]
+    );
+
+    res.status(201).json({ message: "Product added successfully" });
+  } catch (error) {
+    // ❌ Handle errors
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // 🔹 Update a product (Admin Only)
 exports.updateProduct = async (req, res) => {
-    const { id } = req.params;
-    const { name, description, price, stock_quantity, category, discount, image_url } = req.body;
-    try {
-        const [result] = await db.execute(
-            "UPDATE Products SET name = ?, description = ?, price = ?, stock_quantity = ?, category = ?, discount = ?, image_url = ? WHERE id = ?",
-            [name, description, price, stock_quantity, category, discount, image_url, id]
-        );
+  const { id } = req.params;
+  const {
+    name,
+    description,
+    price,
+    stock_quantity,
+    category,
+    discount,
+    image_url,
+  } = req.body;
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Product not found" });
-        }
+  try {
+    // ✅ Update product details in the database
+    const [result] = await db.execute(
+      "UPDATE Products SET name = ?, description = ?, price = ?, stock_quantity = ?, category = ?, discount = ?, image_url = ? WHERE id = ?",
+      [
+        name,
+        description,
+        price,
+        stock_quantity,
+        category,
+        discount,
+        image_url,
+        id,
+      ]
+    );
 
-        res.json({ message: "Product updated successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    // ✅ Check if any rows were affected (i.e., product exists)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Product not found" });
     }
+
+    res.json({ message: "Product updated successfully" });
+  } catch (error) {
+    // ❌ Handle errors
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // 🔹 Delete a product (Admin Only)
 exports.deleteProduct = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const [result] = await db.execute("DELETE FROM Products WHERE id = ?", [id]);
+  const { id } = req.params;
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ error: "Product not found" });
-        }
+  try {
+    // ✅ Delete product by ID
+    const [result] = await db.execute("DELETE FROM Products WHERE id = ?", [
+      id,
+    ]);
 
-        res.json({ message: "Product deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+    // ✅ Check if any rows were affected (i.e., product exists)
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Product not found" });
     }
+
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    // ❌ Handle errors
+    res.status(500).json({ error: error.message });
+  }
 };

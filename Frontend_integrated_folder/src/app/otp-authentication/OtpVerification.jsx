@@ -3,16 +3,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const OTPAuthentication = () => {
-  const [phone, setPhone] = useState("");
-  const [phoneError, setPhoneError] = useState("");
-  const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState(null);
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [otpError, setOtpError] = useState(""); // To show wrong OTP message
-  const router = useRouter(); // ✅ Use Next.js router for redirection
+  const [phone, setPhone] = useState(""); // State to store phone number input
+  const [phoneError, setPhoneError] = useState(""); // State for phone number validation error
+  const [otp, setOtp] = useState(""); // State to store OTP input
+  const [generatedOtp, setGeneratedOtp] = useState(null); // State to store the generated OTP
+  const [otpSent, setOtpSent] = useState(false); // State to track if OTP is sent
+  const [otpVerified, setOtpVerified] = useState(false); // State to track if OTP is verified
+  const [otpError, setOtpError] = useState(""); // State to show incorrect OTP message
+  const router = useRouter(); // Next.js router for navigation
 
-  // ✅ Validate Phone Number (Only 10 Digits)
+  // Function to validate phone number (Only 10 digits allowed)
   const validatePhone = (value) => {
     const numericValue = value.replace(/\D/g, ""); // Remove non-numeric characters
 
@@ -27,31 +27,31 @@ const OTPAuthentication = () => {
     setPhone(numericValue);
   };
 
-  // ✅ Generate and Send OTP
+  // Function to generate and send OTP
   const sendOtp = () => {
     if (phone.length === 10) {
-      const otpCode = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000); // Generate a random 6-digit OTP
       setGeneratedOtp(otpCode);
       setOtpSent(true);
-      setOtpError(""); // Clear previous OTP errors
-      alert(`Your OTP is: ${otpCode}`); // Simulated OTP (Replace with real SMS API)
+      setOtpError(""); // Clear any previous OTP errors
+      alert(`Your OTP is: ${otpCode}`); // Simulated OTP alert (Replace with real SMS API)
     }
   };
 
-  // ✅ Verify OTP and Redirect
+  // Function to verify OTP and redirect if correct
   const verifyOtp = () => {
     if (otp === generatedOtp?.toString()) {
       setOtpVerified(true);
       setOtpError(""); // Clear OTP error if correct
       alert("OTP Verified Successfully ✅");
 
-      // ✅ Store phone number in localStorage (Temporary Authentication)
+      // Store phone number in localStorage (Temporary Authentication)
       localStorage.setItem("authenticatedPhone", phone);
 
-      // ✅ Redirect user to Billing Page
+      // Redirect user to Billing Page after successful verification
       router.push("/billing");
     } else {
-      setOtpError("Incorrect OTP. Please try again.");
+      setOtpError("Incorrect OTP. Please try again."); // Show error for incorrect OTP
     }
   };
 
@@ -63,7 +63,7 @@ const OTPAuthentication = () => {
           OTP Authentication
         </h2>
 
-        {/* Phone Number Input */}
+        {/* Phone Number Input Section */}
         {!otpSent && (
           <div className="flex flex-col">
             <input
@@ -77,7 +77,7 @@ const OTPAuthentication = () => {
               }`}
               value={phone}
               onChange={(e) => validatePhone(e.target.value)}
-              maxLength={10}
+              maxLength={10} // Limit input to 10 characters
             />
             {phoneError && (
               <p className="text-red-500 text-sm mt-1">{phoneError}</p>
@@ -105,7 +105,7 @@ const OTPAuthentication = () => {
               className="text-black border rounded-md p-3 outline-none border-gray-300 focus:border-black"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              maxLength={6}
+              maxLength={6} // Limit OTP input to 6 characters
             />
 
             {/* Error Message for Wrong OTP */}

@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { FaTimes } from "react-icons/fa";
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -13,9 +13,9 @@ export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState([]);
   const Router = useRouter();
 
+  // Component to store cart details in localStorage whenever they update
   const CartSummary = ({ subtotal, discount, total, cartItems }) => {
     useEffect(() => {
-      // Store cart details in localStorage whenever they update
       const cartData = {
         subtotal,
         discount,
@@ -26,7 +26,7 @@ export default function ShoppingCart() {
     }, [subtotal, discount, total, cartItems]);
   };
 
-  // ✅ Fetch Cart Items Once When Component Mounts
+  // Fetch Cart Items Once When Component Mounts
   useEffect(() => {
     const fetchCartItems = async () => {
       const storedUserId = localStorage.getItem("userId");
@@ -42,19 +42,19 @@ export default function ShoppingCart() {
 
       try {
         const response = await axios.get("http://localhost:8000/cart/", {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Include token correctly
+          headers: { Authorization: `Bearer ${token}` }, // Include token correctly
         });
 
-        setCartItems(response.data || []); // ✅ Ensure response data is correctly stored
+        setCartItems(response.data || []); // Ensure response data is correctly stored
       } catch (error) {
         console.error("Failed to fetch cart:", error.response?.data || error);
       }
     };
 
     fetchCartItems();
-  }, []); // ✅ Runs only on mount
+  }, []);
 
-  // ✅ Update Quantity & Sync with Backend
+  // Update Quantity & Sync with Backend
   const updateQuantity = async (id, newQuantity) => {
     if (newQuantity < 1) return; // Prevents quantity from going below 1
 
@@ -75,7 +75,7 @@ export default function ShoppingCart() {
 
       console.log("Quantity updated:", response.data);
 
-      // ✅ Update UI after success
+      // Update UI after success
       setCartItems((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, quantity: newQuantity } : item
@@ -89,7 +89,7 @@ export default function ShoppingCart() {
     }
   };
 
-  // ✅ Remove Item from Cart & Backend
+  // Remove Item from Cart & Backend
   const removeItem = async (id) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -104,13 +104,14 @@ export default function ShoppingCart() {
 
       console.log("Item removed from cart");
 
-      // ✅ Update UI after success
+      // Update UI after success
       setCartItems((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Failed to remove item:", error.response?.data || error);
     }
   };
 
+  // Apply discount coupon
   const applyCoupon = () => {
     if (couponCode === "DISCOUNT10") {
       setDiscount(0.1); // 10% discount
@@ -120,6 +121,7 @@ export default function ShoppingCart() {
     }
   };
 
+  // Redirect to checkout page
   const handleCheckout = () => {
     Router.push("/billing");
   };
@@ -168,13 +170,6 @@ export default function ShoppingCart() {
                     {cartItems.map((item) => (
                       <tr key={item.id} className="border-b">
                         <td className="p-3 flex items-center gap-3">
-                          {/* <Image
-                            src={item.image || "/placeholder.png"}
-                            alt={item.name}
-                            width={50}
-                            height={50}
-                            className="rounded"
-                          /> */}
                           {item.name}
                         </td>
                         <td className="p-3">
@@ -188,7 +183,7 @@ export default function ShoppingCart() {
                                 updateQuantity(item.id, item.quantity - 1)
                               }
                               className="px-2"
-                              disabled={item.quantity <= 1} // ✅ Prevent going below 1
+                              disabled={item.quantity <= 1} // Prevent going below 1
                             >
                               -
                             </button>
@@ -223,6 +218,8 @@ export default function ShoppingCart() {
               </div>
             )}
           </div>
+
+          {/* Cart Summary */}
           <div className="h-[19rem] bg-white p-4 rounded-lg shadow-md w-full lg:w-80 text-black">
             <h3 className="text-lg font-semibold mb-3">Cart Total</h3>
             <div className="flex justify-between border-b pb-2">
@@ -241,43 +238,13 @@ export default function ShoppingCart() {
             </div>
             <div className="flex justify-between font-bold text-lg py-2">
               <span>Total:</span>
-              <span
-                onChange={() => {
-                  localStorage.setItem("cartTotal", total.toFixed(2));
-                }}
-              >
-                &#8377;{total.toFixed(2)}
-              </span>
+              <span>&#8377;{total.toFixed(2)}</span>
             </div>
             <button
               onClick={handleCheckout}
               className="bg-green-500 text-white w-full py-3 rounded-full mt-3 hover:opacity-90"
             >
               Proceed to Checkout
-            </button>
-          </div>
-        </div>
-
-        {/* Coupon Section */}
-        <div className="bg-white w-full lg:w-2/5 mt-4 p-4 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-3 text-black">Coupon Code</h3>
-          <div className="relative w-full">
-            <label htmlFor="coupon-code" className="sr-only">
-              Enter coupon code
-            </label>
-            <input
-              id="coupon-code"
-              type="text"
-              placeholder="Enter code"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              className="w-full p-3 border rounded-full pr-20 md:pr-16"
-            />
-            <button
-              onClick={applyCoupon}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black text-white px-8 md:px-6 py-2 rounded-full hover:opacity-90"
-            >
-              Apply
             </button>
           </div>
         </div>

@@ -2,30 +2,25 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function ProductModel({ isOpen, onClose, product }) {
-  const [mainImage, setMainImage] = useState("");
-  const [userId, setUserId] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+  const [mainImage, setMainImage] = useState(""); // Stores the main product image
+  const [userId, setUserId] = useState(null); // Stores the user ID
+  const [quantity, setQuantity] = useState(1); // Tracks the selected quantity
+  const router = useRouter(); // Next.js router for navigation
 
-  // console.log("products", product);
-
-  // useEffect(() => {
-  //   // ✅ Retrieve userId from localStorage
-  //   const storedUserId = localStorage.getItem("userId");
-  //   if (storedUserId) {
-  //     setUserId(storedUserId);
-  //   }
-  // }, []);
-
+  // Function to add product to the cart
   const addToCart = async (product) => {
     const storedUserId = localStorage.getItem("userId");
     if (storedUserId) {
       setUserId(storedUserId);
     }
-    const token = localStorage.getItem("token");
+
+    const token = localStorage.getItem("token"); // Retrieve authentication token
     if (!token) {
-      alert("Please log in first.");
+      alert("Please log in first."); // Alert user if not logged in
+      router.push("/Register"); // Redirect to Register page
       return;
     }
 
@@ -34,17 +29,16 @@ export default function ProductModel({ isOpen, onClose, product }) {
         "http://localhost:8000/cart/",
         { product_id: product.id, quantity },
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Include the auth token
+          headers: { Authorization: `Bearer ${token}` }, // Send token in request headers
         }
       );
-
       console.log("Cart updated:", response.data);
     } catch (error) {
       console.error("Failed to add to cart:", error.response?.data || error);
     }
   };
 
-  if (!isOpen) return null; // Hide modal when it's not open
+  if (!isOpen) return null; // If modal is not open, return null to hide it
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -62,24 +56,13 @@ export default function ProductModel({ isOpen, onClose, product }) {
           />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Side - Thumbnails and Main Image */}
+        <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+          {/* Left Side - Product Images */}
           <div className="flex gap-4 flex-col-reverse md:flex-col-reverse lg:flex-row justify-center items-center">
             <div className="flex lg:flex-col gap-2 flex-row md:flex-row justify-center">
-              {product.images.map((img, index) => (
-                <Image
-                  key={index}
-                  src={img}
-                  alt="Thumbnail"
-                  width={60}
-                  height={60}
-                  className={`w-16 h-16 object-cover rounded-md cursor-pointer border-2 ${
-                    mainImage === img ? "border-green-500" : "border-gray-300"
-                  }`}
-                  onClick={() => setMainImage(img)}
-                />
-              ))}
+              {/* Thumbnail images could be added here */}
             </div>
+            {/* Main product image */}
             <Image
               src={product.image_url}
               alt={product.name}
@@ -102,8 +85,9 @@ export default function ProductModel({ isOpen, onClose, product }) {
                 </span>
               </div>
 
-              {/* Rating */}
+              {/* Product Rating */}
               <div className="flex items-center gap-2 text-yellow-500 text-lg mt-2">
+                {/* Display star rating images */}
                 <img
                   src="/Icons & Icon-gifs/full star.png"
                   alt="Star"
@@ -137,7 +121,7 @@ export default function ProductModel({ isOpen, onClose, product }) {
                 <span className="text-sm text-gray-600">(4 Reviews)</span>
               </div>
 
-              {/* Price Section */}
+              {/* Product Price & Discount */}
               <p className="text-lg text-gray-700 mt-2">
                 <span className="line-through text-gray-500">
                   {product.oldPrice}
@@ -150,9 +134,8 @@ export default function ProductModel({ isOpen, onClose, product }) {
                 </span>
               </p>
 
-              {/* Brand & Share Section */}
+              {/* Product Brand & Social Sharing */}
               <div className="flex items-center justify-between border-t pt-3 mt-3 flex-col-reverse md:flex-row gap-2">
-                {/* Brand Section */}
                 <div className="flex items-center gap-2">
                   <span className="text-gray-600 font-semibold">Brand:</span>
                   <Image
@@ -163,12 +146,11 @@ export default function ProductModel({ isOpen, onClose, product }) {
                     className="object-contain"
                   />
                 </div>
-
-                {/* Share Section */}
                 <div className="flex items-center gap-2">
                   <span className="text-gray-600 font-semibold">
                     Share item:
                   </span>
+                  {/* Social media icons */}
                   <img
                     src="/Icons & Icon-gifs/facebook.png"
                     alt="Facebook"
@@ -196,12 +178,13 @@ export default function ProductModel({ isOpen, onClose, product }) {
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Product Description */}
               <p className="mt-4 text-gray-600">{product.description}</p>
             </div>
 
             {/* Quantity Selector & Add to Cart */}
             <div className="flex items-center gap-4 mt-4 flex-col md:flex-row">
+              {/* Quantity Selection */}
               <div className="flex items-center border rounded-full px-3 py-1 text-black">
                 <button
                   className="px-2 text-gray-600"
@@ -217,53 +200,12 @@ export default function ProductModel({ isOpen, onClose, product }) {
                   +
                 </button>
               </div>
-              <div className="flex flex-row gap-2">
-                <button
-                  onClick={() => addToCart(product)}
-                  className="bg-green-400 text-white text-[12px] md:text-[12px] lg:text-[14px] px-6 py-2 rounded-full flex items-center gap-2 hover:scale-101 transition"
-                >
-                  Add to cart+{" "}
-                  <img
-                    src="/Icons & Icon-gifs/cart-static.png"
-                    className="w-6 h-6"
-                    alt="Cart GIF"
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.src =
-                        "/Icons & Icon-gifs/cart-transparent.gif")
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.src =
-                        "/Icons & Icon-gifs/cart-static.png")
-                    }
-                  />
-                </button>
-                {/* <button className="bg-gray-100 p-2 rounded-full text-green-500 text-xl">
-                  <img
-                    src="/Icons & Icon-gifs/wishlist.png"
-                    alt="Wishlist"
-                    width={20}
-                    height={20}
-                  />
-                </button> */}
-              </div>
-            </div>
-
-            {/* Divider Line */}
-            <hr className="my-4 border-gray-300" />
-
-            {/* Category & Tags */}
-            <div className=" hidden md:block">
-              <p className="text-gray-600 font-semibold">
-                Category: <span className="text-black">{product.category}</span>
-              </p>
-              <p className="text-gray-600 font-semibold mt-1">
-                Tags:
-                {product.tags.map((tag, index) => (
-                  <span key={index} className="ml-1 text-green-600">
-                    {tag}
-                  </span>
-                ))}
-              </p>
+              <button
+                onClick={() => addToCart(product)}
+                className="bg-green-400 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:scale-101 transition"
+              >
+                Add to cart+
+              </button>
             </div>
           </div>
         </div>

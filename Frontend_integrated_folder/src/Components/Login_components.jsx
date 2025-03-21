@@ -6,11 +6,14 @@ import axios from "axios";
 
 export default function Login() {
   const router = useRouter(); // Initialize router for redirection
+
+  // State variables for managing input fields and messages
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  // Function to handle user login
   const handleLogin = async () => {
     try {
       const response = await axios.post("http://localhost:8000/auth/login", {
@@ -42,7 +45,8 @@ export default function Login() {
         <div className="w-full flex flex-col items-center text-black">
           <h2 className="text-3xl font-semibold">Login</h2>
           <p className="mb-4">Login to your account</p>
-          {/* Social Login Icons */}
+
+          {/* Social Login Options */}
           <div className="flex space-x-4 mb-4">
             <img
               src="/Icons & Icon-gifs/google.png"
@@ -62,7 +66,8 @@ export default function Login() {
               className="w-8 h-8 cursor-pointer"
             />
           </div>
-          {/* Login Inputs */}
+
+          {/* Email Input */}
           <input
             type="email"
             placeholder="Example@email.com"
@@ -70,6 +75,8 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+
+          {/* Password Input */}
           <input
             type="password"
             placeholder="Password"
@@ -77,16 +84,23 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          {/* Error & Success Messages */}
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && <p className="text-green-500 text-sm">{success}</p>}{" "}
-          {/* Success Message */}
+          {success && <p className="text-green-500 text-sm">{success}</p>}
+
+          {/* Forgot Password */}
           <p className="text-sm cursor-pointer">Forgot Password?</p>
+
+          {/* Login Button */}
           <button
             className="bg-green-600 text-white px-6 py-2 rounded-[2rem] mt-2"
             onClick={handleLogin}
           >
             Login
           </button>
+
+          {/* Signup Link */}
           <p className="mt-4">
             Don't have an account?{" "}
             <a

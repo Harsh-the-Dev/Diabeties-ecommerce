@@ -11,6 +11,9 @@ const nextConfig = {
   devIndicators: {
     buildActivity: false, // ✅ Removes the loading indicator in dev mode
   },
+  images: {
+    domains: ["images.pexels.com", "encrypted-tbn2.gstatic.com"],
+  },
 };
 
 export default nextConfig;

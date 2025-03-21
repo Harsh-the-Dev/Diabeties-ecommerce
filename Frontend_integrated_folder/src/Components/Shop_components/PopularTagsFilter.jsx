@@ -4,19 +4,20 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function PopularTagsFilter() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true); // State to track if filter section is open
   const [selectedTags, setSelectedTags] = useState([
     "Healthy",
     "Herbal",
     "Vegetarian",
-  ]);
-  const [isMobile, setIsMobile] = useState(false);
+  ]); // Default selected tags
+  const [isMobile, setIsMobile] = useState(false); // State to check if on mobile
 
-  // Check if we're on mobile
+  // Effect to handle responsive behavior
   useEffect(() => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768);
-      // Auto-close on mobile
+
+      // Auto-close filter section on mobile
       if (window.innerWidth < 768) {
         setIsOpen(false);
       } else {
@@ -24,22 +25,25 @@ export default function PopularTagsFilter() {
       }
     };
 
-    // Initial check
+    // Initial check on mount
     checkIfMobile();
 
-    // Add resize listener
+    // Listen for window resize
     window.addEventListener("resize", checkIfMobile);
 
-    // Cleanup
+    // Cleanup function to remove event listener
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
+  // Toggle filter section visibility
   const toggleFilter = () => {
     setIsOpen(!isOpen);
   };
 
+  // Available tags
   const tags = ["Diabetic-Friendly"];
 
+  // Toggle tag selection
   const toggleTag = (tag) => {
     if (selectedTags.includes(tag)) {
       setSelectedTags(selectedTags.filter((t) => t !== tag));
@@ -50,6 +54,7 @@ export default function PopularTagsFilter() {
 
   return (
     <div className="border rounded-md p-4 pb-0 bg-white text-black">
+      {/* Header section with title and toggle button */}
       <div
         className="flex justify-between items-center mb-4 cursor-pointer"
         onClick={toggleFilter}
@@ -60,13 +65,13 @@ export default function PopularTagsFilter() {
         </button>
       </div>
 
+      {/* Tag selection area */}
       {isOpen && (
         <div className="flex flex-wrap gap-2 pb-4">
           {tags.map((tag) => (
-            <Link href="/Products">
+            <Link href="/Products" key={tag}>
               <button
-                key={tag}
-                className={`px-3 py-1 rounded-full text-sm  ${
+                className={`px-3 py-1 rounded-full text-sm ${
                   selectedTags.includes(tag)
                     ? "bg-green-300 bg-bg-green-600"
                     : "bg-gray-100 text-gray-700"

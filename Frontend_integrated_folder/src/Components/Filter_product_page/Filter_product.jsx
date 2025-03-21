@@ -18,7 +18,7 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/products"); // Replace with your local API endpoint
+        const response = await axios.get("http://localhost:8000/products"); // Fetch products from API
         setProducts(response.data);
       } catch (error) {
         setError(error.message);
@@ -30,30 +30,28 @@ export default function ProductPage() {
     fetchProducts();
   }, []);
 
+  // Handle product click and store product data in session storage
   const handleProductClick = (product) => {
-    const queryString = new URLSearchParams({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      description: product.description,
-      image_url: product.image_url,
-      discount: product.discount,
-    }).toString();
+    if (!product) return;
 
-    router.push(`/Product_description?${queryString}`);
+    sessionStorage.setItem("selectedProduct", JSON.stringify(product));
+    router.push("/Product_description");
   };
 
   const totalPages = 10; // Example total pages
   const totalResults = 256; // Example total results
 
+  // Handle page change in pagination
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
+  // Handle filter changes
   const handleFilterChange = (key, value) => {
     setSelectedFilters({ ...selectedFilters, [key]: value });
   };
 
+  // Remove selected filter
   const removeFilter = (key) => {
     setSelectedFilters({ ...selectedFilters, [key]: "" });
   };
@@ -76,6 +74,7 @@ export default function ProductPage() {
       {/* Filter & Sort Options */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <div className="flex flex-wrap space-x-2 md:space-x-4">
+          {/* Category Filter */}
           <select
             className="border rounded-md p-2 cursor-pointer w-full md:w-auto"
             onChange={(e) => handleFilterChange("category", e.target.value)}
@@ -84,6 +83,7 @@ export default function ProductPage() {
             <option value="Diabatese">Diabatese</option>
           </select>
 
+          {/* Price Filter */}
           <select
             className="border rounded-md p-2 cursor-pointer w-full md:w-auto"
             onChange={(e) => handleFilterChange("price", e.target.value)}
@@ -93,6 +93,7 @@ export default function ProductPage() {
             <option value="High">High</option>
           </select>
 
+          {/* Rating Filter */}
           <select
             className="border rounded-md p-2 cursor-pointer w-full md:w-auto"
             onChange={(e) => handleFilterChange("rating", e.target.value)}
@@ -102,6 +103,7 @@ export default function ProductPage() {
           </select>
         </div>
 
+        {/* Sorting Options */}
         <div className="flex items-center space-x-2 mt-4 md:mt-0">
           <span className="text-sm">Sort by:</span>
           <select

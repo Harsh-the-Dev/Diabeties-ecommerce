@@ -6,15 +6,18 @@ import axios from "axios";
 export default function Register() {
   const router = useRouter(); // Initialize router for redirection
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  // State variables for form fields and messages
+  const [name, setName] = useState(""); // User's full name
+  const [email, setEmail] = useState(""); // User's email
+  const [phone, setPhone] = useState(""); // User's phone number
+  const [password, setPassword] = useState(""); // User's password
+  const [error, setError] = useState(""); // Error message state
+  const [success, setSuccess] = useState(""); // Success message state
 
+  // Function to handle user signup
   const handleSignup = async () => {
     try {
+      // Sending signup request to backend API
       const response = await axios.post("http://localhost:8000/auth/signup", {
         name,
         email,
@@ -24,10 +27,10 @@ export default function Register() {
 
       if (response.status === 201) {
         setSuccess("Signup successful! Redirecting...");
-        setTimeout(() => router.push("/Login"), 2000); // Redirect to Home after 2s
+        setTimeout(() => router.push("/Login"), 2000); // Redirect to login page after 2 seconds
       }
     } catch (err) {
-      setError(err.response?.data?.error || "Signup failed. Please try again.");
+      setError(err.response?.data?.error || "Signup failed. Please try again."); // Set error message
     }
   };
 
@@ -38,6 +41,7 @@ export default function Register() {
         <div className="w-full flex flex-col items-center text-black">
           <h2 className="text-3xl font-semibold">Create an Account</h2>
           <p className="mb-4">Create your account</p>
+
           {/* Social Signup Icons */}
           <div className="flex space-x-4 mb-4">
             <img
@@ -56,7 +60,8 @@ export default function Register() {
               className="w-8 h-8 cursor-pointer"
             />
           </div>
-          {/* Signup Inputs */}
+
+          {/* Signup Input Fields */}
           <input
             type="text"
             placeholder="Full Name"
@@ -85,15 +90,20 @@ export default function Register() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
+          {/* Error & Success Messages */}
           {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && <p className="text-green-500 text-sm">{success}</p>}{" "}
-          {/* Success Message */}
+          {success && <p className="text-green-500 text-sm">{success}</p>}
+
+          {/* Signup Button */}
           <button
             className="bg-green-600 text-white px-6 py-2 rounded-[2rem] mt-2"
             onClick={handleSignup}
           >
             Sign Up
           </button>
+
+          {/* Redirect to Login */}
           <p className="mt-4">
             Already have an account?{" "}
             <a

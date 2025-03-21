@@ -7,19 +7,21 @@ import PopularTagsFilter from "./PopularTagsFilter";
 export default function MobileFilterButton() {
   const [showFilters, setShowFilters] = useState(false);
 
+  // Toggle the visibility of the filter modal
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
 
   return (
     <>
-      {/* Mobile filter button */}
+      {/* Mobile filter button - only visible on small screens */}
       <div className="md:hidden">
         <button
           className="flex items-center bg-green-500 text-white px-4 py-2 rounded-md"
           onClick={toggleFilters}
         >
           <span className="mr-2">Filter</span>
+          {/* Filter icon */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5"
@@ -38,6 +40,7 @@ export default function MobileFilterButton() {
         {showFilters && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-end">
             <div className="bg-white w-full rounded-t-lg p-4 max-h-[80vh] overflow-y-auto">
+              {/* Header section with title and close button */}
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-medium">Filters</h2>
                 <button className="text-gray-500" onClick={toggleFilters}>
@@ -45,6 +48,7 @@ export default function MobileFilterButton() {
                 </button>
               </div>
 
+              {/* Filter options section */}
               <div className="space-y-4">
                 <CategoryFilter />
                 <PriceFilter />
@@ -52,6 +56,7 @@ export default function MobileFilterButton() {
                 <PopularTagsFilter />
               </div>
 
+              {/* Buttons for resetting or applying filters */}
               <div className="mt-4 flex justify-between">
                 <button
                   className="px-4 py-2 border border-gray-300 rounded-md"

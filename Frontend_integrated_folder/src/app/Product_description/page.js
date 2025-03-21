@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 
+// Product details object
 const product = {
   name: "Stevia Extract",
   description:
@@ -37,6 +38,7 @@ const product = {
   originalBadge: "100% Original Product",
 };
 
+// Related products list
 const relatedProducts = [
   {
     id: 1,
@@ -102,60 +104,46 @@ const relatedProducts = [
 ];
 
 export default function ProductPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mainImage, setMainImage] = useState("");
-  const [userId, setUserId] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("description");
-  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state management
+  const [mainImage, setMainImage] = useState(""); // Main image for the product
+  const [userId, setUserId] = useState(null); // User ID state
+  const [quantity, setQuantity] = useState(1); // Quantity selector state
+  const [activeTab, setActiveTab] = useState("description"); // Tab selection state
+  const [relatedProducts, setRelatedProducts] = useState([]); // Related products state
 
   const router = useRouter();
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState([]); // Product state
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const originalPrice = parseFloat(params.get("price")) || 0;
-      const discount = parseFloat(params.get("discount")) || 0;
-      const discountedPrice = originalPrice - (originalPrice * discount) / 100;
-
-      const fetchedProduct = {
-        id: params.get("id"),
-        name: params.get("name"),
-        price: discountedPrice.toFixed(2),
-        originalPrice: originalPrice.toFixed(2),
-        description: params.get("description"),
-        image_url: params.get("image_url"),
-        discount: params.get("discount"),
-        images: params.get("image_url") ? [params.get("image_url")] : [],
-        tags: [params.get("category") || "General"], // Default tag if not provided
-        details: params.get("description")
-          ? [params.get("description")]
-          : ["No additional details available."], // Ensure images array exists
-      };
-
-      setProduct(fetchedProduct);
-      setMainImage(fetchedProduct.image_url || "/default-image.jpg");
+      const storedProduct = sessionStorage.getItem("selectedProduct"); // Retrieve product from session storage
+      if (storedProduct) {
+        const parsedProduct = JSON.parse(storedProduct);
+        setProduct(parsedProduct);
+      }
     }
   }, []);
+
+  if (!product) return <p>Loading...</p>; // Handle case when product data is not available
 
   const addToCart = async (product) => {
     const storedUserId = localStorage.getItem("userId");
     if (storedUserId) {
       setUserId(storedUserId);
     }
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token"); // Retrieve auth token
     if (!token) {
-      alert("Please log in first.");
+      alert("Please log in first."); // Prompt user to log in
+      router.push("/Register");
       return;
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8000/cart/",
         { product_id: product.id, quantity },
         {
-          headers: { Authorization: `Bearer ${token}` }, // ✅ Include the auth token
+          headers: { Authorization: `Bearer ${token}` }, // Include authentication token
         }
       );
     } catch (error) {
@@ -165,11 +153,10 @@ export default function ProductPage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/products/") // Replace with actual API
+      .get("http://localhost:8000/products") // Fetch related products from API
       .then((response) => {
         setRelatedProducts(response.data);
       })
-
       .catch((error) =>
         console.error("Error fetching related products:", error)
       );
@@ -183,29 +170,14 @@ export default function ProductPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
         <div className="flex gap-4 w-full md:w-full lg:w-45 items-start justify-center flex-col-reverse md:flex-col-reverse lg:flex-row">
           {/* Thumbnail Images (Left Side) */}
-          <div className="w-full md:w-full lg:w-16 flex flex-row md:flex-row lg:flex-col justify-center gap-2 pt-4 md:mt-0">
-            {product.images?.map((img, index) => (
-              <Image
-                key={index}
-                src={img} // Use 'img' instead of 'mainImage'
-                alt={product.name}
-                width={80}
-                height={80}
-                className={`w-16 h-16 bg-red-200 object-cover rounded-md cursor-pointer border-2 ${
-                  mainImage === img ? "border-green-500" : "border-gray-300"
-                }`}
-                onClick={() => setMainImage(img)}
-              />
-            ))}
-          </div>
+          <div className="w-full md:w-full lg:w-16 flex flex-row md:flex-row lg:flex-col justify-center gap-2 pt-4 md:mt-0"></div>
 
           {/* Main Image */}
           <Image
-            src={mainImage}
-            alt={product.name}
+            src={product.image_url}
+            alt={product.name || "Product Image"}
             width={400}
             height={400}
-            className="rounded-lg w-full"
           />
         </div>
 
@@ -226,7 +198,8 @@ export default function ProductPage() {
 
           <p className="text-lg text-gray-700 mt-2">
             <span className="line-through text-gray-500">
-              &#8377;{product.originalPrice}
+              &#8377;
+              {Math.round((product.price * 100) / (100 - product.discount))}
             </span>
             <span className="text-green-500 font-bold ml-2 px-2 py-1 rounded">
               &#8377;{product.price}
@@ -325,14 +298,6 @@ export default function ProductPage() {
                   }
                 />
               </button>
-
-              {/* Wishlist Button */}
-              {/* <button className="bg-green-100 p-2 rounded-full text-green-500 text-xl">
-                <img
-                  src="/Icons & Icon-gifs/wishlist.png"
-                  className="w-10 h-10"
-                />
-              </button> */}
             </div>
           </div>
 
@@ -444,15 +409,14 @@ export default function ProductPage() {
               </span>
 
               {/* Product Image */}
-              <Link href="/Product_description">
-                <Image
-                  src={item.image_url}
-                  alt={item.name}
-                  width={200}
-                  height={200}
-                  className="w-full h-52 object-cover rounded-md"
-                />
-              </Link>
+              <Image
+                src={item.image_url}
+                alt={item.name}
+                width={200}
+                height={200}
+                className="w-full h-52 object-cover rounded-md"
+                onClick={() => setProduct(item)}
+              />
 
               {/* Product Name */}
               <h3 className="font-bold text-[14px] mt-2 text-black">
@@ -490,40 +454,6 @@ export default function ProductPage() {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto mt-14 p-4">
-        <h2 className="text-lg lg:text-[2rem] font-black text-center border-b pb-4 text-black">
-          Seleted <span className="text-[#2cc16d]">Product</span>
-        </h2>
-        <h1 className="text-3xl font-bold text-black pt-4">{product.name}</h1>
-        <p className="text-green-500 text-[1rem] font-semibold">
-          &#8377;{product.price}
-        </p>
-        {/* Open Pop-up Button */}
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="mt-4 bg-green-400 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-green-300 transition"
-        >
-          View Details{" "}
-          <img
-            src="/Icons & Icon-gifs/cart-static.png"
-            className="w-6 h-6"
-            alt="Cart GIF"
-            onMouseEnter={(e) =>
-              (e.currentTarget.src = "/Icons & Icon-gifs/cart-transparent.gif")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.src = "/Icons & Icon-gifs/cart-static.png")
-            }
-          />
-        </button>
-        {/* Modal Component */}
-        <ProductModel
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          product={product}
-        />
       </div>
     </div>
   );

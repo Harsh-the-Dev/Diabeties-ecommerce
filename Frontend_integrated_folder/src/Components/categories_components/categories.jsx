@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
+// Define categories with their respective items
 const categories = [
   {
     title: "Medicines & Supplements",
@@ -40,6 +41,7 @@ const categories = [
   },
 ];
 
+// Define new in-store products with discounts
 const newInStore = [
   { name: "Fitness Equipment", discount: "85%", image: "/10 2.png" },
   { name: "Health Monitors", discount: "90%", image: "/10 7.png" },
@@ -53,17 +55,21 @@ export default function CategoryPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 pt-[140px] text-black">
+      {/* Page title */}
       <h1 className="text-[14px] lg:text-[2rem] font-bold text-center mb-8">
         Shop by <span className="text-[#2cc16d]">Category</span>
       </h1>
 
+      {/* Category Section */}
       {categories.map((section, index) => (
         <div key={index} className="mb-10 p-6 rounded-lg bg-gray-200">
+          {/* Category title */}
           <h2 className="text-[16px] lg:text-[20px] font-bold mb-6">
             {section.title}
           </h2>
           <Link href="/Products">
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              {/* Render category items */}
               {section.items.map((category, i) => (
                 <div
                   key={i}
@@ -95,13 +101,14 @@ export default function CategoryPage() {
       </h2>
       <Link href="/stores">
         <div className="bg-blue-100 p-6 rounded-lg grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          {/* Render new in-store products */}
           {newInStore.map((item, index) => (
             <div
               key={index}
               className="relative flex flex-col items-center cursor-pointer hover:scale-105 transition bg-white p-4 rounded-lg overflow-hidden"
             >
-              {/* Discount Badge */}ded-bl-n
-              <div className="absolute text-black w-[5rem] h-[3rem] border-none rounded-tr-md rounded-br-md rounded-tl-none rounone top-36 left-0 bg-blue-100  text-xs font-bold px-3 py-1">
+              {/* Discount Badge */}
+              <div className="absolute text-black w-[5rem] h-[3rem] border-none rounded-tr-md rounded-br-md top-36 left-0 bg-blue-100 text-xs font-bold px-3 py-1">
                 Up to {item.discount} OFF
               </div>
               <Image

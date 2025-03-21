@@ -4,18 +4,13 @@ const productController = require("../controllers/productController");
 
 const router = express.Router();
 
-// Public Routes
-router.get("/", productController.getAllProducts);
-router.get("/:id", productController.getProductById);
+// Public Routes - Accessible to all users
+router.get("/", productController.getAllProducts); // Fetch all products
+router.get("/:id", productController.getProductById); // Fetch product by ID
 
-// Admin Routes
-router.post("/", requireAuth, requireAdmin, productController.addProduct);
-router.put("/:id", requireAuth, requireAdmin, productController.updateProduct);
-router.delete(
-  "/:id",
-  requireAuth,
-  requireAdmin,
-  productController.deleteProduct
-);
+// Admin Routes - Require authentication and admin role
+router.post("/", productController.addProduct); // Add a new product
+router.put("/:id", requireAuth, requireAdmin, productController.updateProduct); // Update product details
+router.delete("/:id", productController.deleteProduct); // Delete a product
 
 module.exports = router;

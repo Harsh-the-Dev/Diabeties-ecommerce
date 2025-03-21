@@ -33,6 +33,7 @@ export default function RatingFilter() {
     setIsOpen(!isOpen);
   };
 
+  // Rating options
   const ratings = [
     { value: 5.0, label: "5.0" },
     { value: 4.0, label: "4.0 & up" },
@@ -41,6 +42,7 @@ export default function RatingFilter() {
     { value: 1.0, label: "1.0 & up" },
   ];
 
+  // Toggle selected rating
   const toggleRating = (value) => {
     if (selectedRatings.includes(value)) {
       setSelectedRatings(selectedRatings.filter((r) => r !== value));
@@ -49,6 +51,7 @@ export default function RatingFilter() {
     }
   };
 
+  // Render star icons based on rating
   const renderStars = (rating) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -71,6 +74,7 @@ export default function RatingFilter() {
 
   return (
     <div className="border rounded-md p-4 pb-0 bg-white text-black">
+      {/* Filter title and toggle button */}
       <div
         className="flex justify-between items-center mb-4 cursor-pointer"
         onClick={toggleFilter}
@@ -81,6 +85,7 @@ export default function RatingFilter() {
         </button>
       </div>
 
+      {/* Rating filter options */}
       {isOpen && (
         <div className="space-y-2 pb-4">
           {ratings.map((rating) => (
@@ -89,12 +94,14 @@ export default function RatingFilter() {
               className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
               onClick={() => toggleRating(rating.value)}
             >
+              {/* Checkbox */}
               <input
                 type="checkbox"
                 checked={selectedRatings.includes(rating.value)}
                 onChange={() => {}} // Handled by div click
                 className="form-checkbox h-4 w-4 text-green-500"
               />
+              {/* Star rating display */}
               <div className="flex items-center">
                 {renderStars(Math.floor(rating.value))}
                 <span className="ml-1 text-sm text-gray-600">
