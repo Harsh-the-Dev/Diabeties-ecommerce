@@ -11,12 +11,13 @@ This project consists of a _.JSX frontend_ and an _Express.js backend_ using _My
 - _Database:_ MySQL (XAMPP for local development)
 
 ---
+# First step 
+git clone (url)
+
 
 ## 1 frontend setup
 
-sh
-git clone (url)
-cd frontend
+cd frontend_integrated_folder
 
 ## 2. Install Dependencies
 
@@ -32,8 +33,6 @@ npm run dev
 
 ## 1. Clone the Repository
 
-sh
-git clone (url)
 cd backend
 
 ## 2. Install Dependencies
